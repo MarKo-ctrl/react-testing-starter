@@ -2,17 +2,35 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TransactionCreateStepTwo from "./TransactionCreateStepTwo";
 
-test("on initial render the pay button is disabled", async () => {
-  render(<TransactionCreateStepTwo sender={{ id: "5" }} receiver={{ id: "5" }} />);
+describe("Unit test", () => {
+  // The following 2 tests are a simple unit testing example
+  // on the second step of a new payment
+  test("on initial render the pay button is disabled", async () => {
+    render(<TransactionCreateStepTwo sender={{ id: "5" }} receiver={{ id: "5" }} />);
 
-  expect(await screen.findByRole("button", { name: /pay/i })).toBeDisabled();
+    expect(await screen.findByRole("button", { name: /pay/i })).toBeDisabled();
+  });
+
+  test("if an amount and note is entered, the pay button becomes enabled", async () => {
+    render(<TransactionCreateStepTwo sender={{ id: "5" }} receiver={{ id: "5" }} />);
+
+    userEvent.type(screen.getByPlaceholderText(/amount/i), "50");
+    userEvent.type(screen.getByPlaceholderText(/add a note/i), "dinner");
+
+    expect(await screen.findByRole("button", { name: /pay/i })).toBeEnabled();
+  });
 });
 
-test("if an amount and note is entered, the pay button becomes enabled", async () => {
-  render(<TransactionCreateStepTwo sender={{ id: "5" }} receiver={{ id: "5" }} />);
+describe("Integration test", () => {
+  // By combining the unit tests above, we can have an appropriate integration test
+  test("if an amount and note is entered, the pay button becomes enabled", async () => {
+    render(<TransactionCreateStepTwo sender={{ id: "5" }} receiver={{ id: "5" }} />);
 
-  userEvent.type(screen.getByPlaceholderText(/amount/i), "50");
-  userEvent.type(screen.getByPlaceholderText(/add a note/i), "dinner");
+    expect(await screen.findByRole("button", { name: /pay/i })).toBeDisabled();
 
-  expect(await screen.findByRole("button", { name: /pay/i })).toBeEnabled();
+    userEvent.type(screen.getByPlaceholderText(/amount/i), "50");
+    userEvent.type(screen.getByPlaceholderText(/add a note/i), "dinner");
+
+    expect(await screen.findByRole("button", { name: /pay/i })).toBeEnabled();
+  });
 });
